@@ -9,12 +9,11 @@ import (
 )
 
 func (info *CollectorInfo) Start() error {
-	db, kind, err := dvdbdata.GetDB(info.ConnectionName)
+	db, err := dvdbdata.GetDBConnection(info.ConnectionName)
 	if err != nil {
 		return err
 	}
 	info.db = db
-	info.dbKind = kind
 	return nil
 }
 
@@ -22,7 +21,7 @@ func (info *CollectorInfo) Finish() error {
 	if info != nil && info.db != nil {
 		db := info.db
 		info.db = nil
-		return dvdbdata.CloseConnection(db)
+		return db.Close(false)
 	}
 	return nil
 }

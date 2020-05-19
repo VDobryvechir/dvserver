@@ -15,7 +15,7 @@ func (info *CollectorInfo) CollectAuxTables() error {
 		if len(ids) == 0 {
 			continue
 		}
-		res, err := dvdbdata.GetSqlTableByIds(db, tableId, ids)
+		res, err := dvdbdata.GetSqlTableByIds(info.db, tableId, ids)
 		if err != nil {
 			return err
 		}

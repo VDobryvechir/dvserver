@@ -4,9 +4,9 @@
 package dbloader
 
 import (
-	"database/sql"
 	"encoding/json"
 	"errors"
+	"github.com/Dobryvechir/microcore/pkg/dvdbdata"
 	"github.com/Dobryvechir/microcore/pkg/dvparser"
 	"strings"
 )
@@ -19,8 +19,7 @@ type CollectorInfo struct {
 	BaseTables      string `json:"base_tables"`
 	IdCollector     map[string][]string
 	DataCollector   map[string][][]string
-	db              *sql.DB
-	dbKind			string
+	db              *dvdbdata.DBConnection
 }
 
 const (
