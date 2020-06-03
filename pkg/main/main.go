@@ -10,6 +10,7 @@ import (
 	_ "github.com/Dobryvechir/microcore/pkg/dvlicense"
 	_ "github.com/Dobryvechir/microcore/pkg/dvoc"
 	_ "github.com/VDobryvechir/dvserver/pkg/dbloader"
+	_ "github.com/VDobryvechir/dvserver/pkg/stock"
 	_ "github.com/godror/godror"
 	_ "github.com/lib/pq"
 )

@@ -6,6 +6,7 @@ package dbloader
 import (
 	"github.com/Dobryvechir/microcore/pkg/dvcsv"
 	"github.com/Dobryvechir/microcore/pkg/dvdbdata"
+	"github.com/Dobryvechir/microcore/pkg/dvevaluation"
 )
 
 func (info *CollectorInfo) Start() error {
@@ -27,5 +28,6 @@ func (info *CollectorInfo) Finish() error {
 }
 
 func (info *CollectorInfo) SaveCsvFile() error {
-	return dvcsv.WriteCsvToFile(info.CsvFileName, info.DataCollector, info.CsvWriteOptions)
+	data := dvevaluation.ConvertInterfaceListsMapToStringListsMap(info.DataCollector, dvevaluation.ConversionOptionSimpleLike)
+	return dvcsv.WriteCsvToFile(info.CsvFileName, data, info.CsvWriteOptions)
 }

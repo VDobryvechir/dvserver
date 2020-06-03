@@ -7,7 +7,9 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/Dobryvechir/microcore/pkg/dvdbdata"
+	"github.com/Dobryvechir/microcore/pkg/dvlog"
 	"github.com/Dobryvechir/microcore/pkg/dvparser"
+	"log"
 	"strings"
 )
 
@@ -17,8 +19,8 @@ type CollectorInfo struct {
 	CsvWriteOptions int    `json:"csv_options"`
 	AuxTables       string `json:"aux_tables"`
 	BaseTables      string `json:"base_tables"`
-	IdCollector     map[string][]string
-	DataCollector   map[string][][]string
+	IdCollector     map[string]map[string]int
+	DataCollector   map[string][][]interface{}
 	db              *dvdbdata.DBConnection
 }
 
@@ -51,8 +53,8 @@ func initCollectorInfo(importName string) (*CollectorInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	collectorInfo.IdCollector = make(map[string][]string)
-	collectorInfo.DataCollector = make(map[string][][]string)
+	collectorInfo.IdCollector = make(map[string]map[string]int)
+	collectorInfo.DataCollector = make(map[string][][]interface{})
 	return collectorInfo, nil
 }
 
@@ -67,22 +69,37 @@ func LoadRelatedTablesByImportName(importName string) error {
 func LoadRelatedTables(collectorInfo *CollectorInfo) error {
 	err := collectorInfo.Start()
 	if err != nil {
+		if logDbImportLevel >= dvlog.LogInfo {
+			log.Printf("Failed to start dbimport %v", err)
+		}
 		return err
+	}
+	if logDbImportLevel >= dvlog.LogDetail {
+		log.Printf("Connection opened, starting to collect info by base tables")
 	}
 	err = collectorInfo.CollectBaseTables()
 	if err != nil {
 		collectorInfo.Finish()
 		return err
 	}
+	if logDbImportLevel >= dvlog.LogDetail {
+		log.Printf("Base tables finished, starting to collect info by aux tables")
+	}
 	err = collectorInfo.CollectAuxTables()
 	if err != nil {
 		collectorInfo.Finish()
 		return err
 	}
+	if logDbImportLevel >= dvlog.LogDetail {
+		log.Printf("Aux tables finished, starting to save to csv file")
+	}
 	err = collectorInfo.SaveCsvFile()
 	if err != nil {
 		collectorInfo.Finish()
 		return err
+	}
+	if logDbImportLevel >= dvlog.LogDetail {
+		log.Printf("Csv saving finished, starting to clean up")
 	}
 	return collectorInfo.Finish()
 }
