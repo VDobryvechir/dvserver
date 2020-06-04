@@ -10,10 +10,28 @@ import (
 	"log"
 )
 
+func filterIdsByOtherIds(ids []string, filter map[string]int) []string {
+	n := len(ids)
+	m := 0
+	for i := 0; i < n; i++ {
+		id := ids[i]
+		if _, ok := filter[id]; !ok {
+			ids[m] = id
+			m++
+		}
+	}
+	return ids[:m]
+}
+
 func (info *CollectorInfo) CollectAuxTables() error {
 	tables := dvparser.ConvertToNonEmptyList(info.AuxTables)
+	prefix := dbImport + info.BasePrefix + "_FILTER_"
 	for _, tableId := range tables {
 		ids := dvparser.GetKeysFromStringIntMap(info.IdCollector[tableId])
+		filter := dvparser.GlobalProperties[prefix+tableId]
+		if filter != "" {
+			ids = filterIdsByOtherIds(ids, info.IdCollector[filter])
+		}
 		if len(ids) == 0 {
 			if logDbImportLevel >= dvlog.LogTrace {
 				log.Printf("Not using %s because of no ids", tableId)

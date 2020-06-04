@@ -11,7 +11,7 @@ import (
 )
 
 func (info *CollectorInfo) CollectBaseTables() error {
-	prefix := dbImport + "BASE_"
+	prefix := dbImport + info.BasePrefix + "_"
 	tables := dvparser.ConvertToNonEmptyList(info.BaseTables)
 	for _, tableId := range tables {
 		ids := dvparser.GetKeysFromStringIntMap(info.IdCollector[tableId])

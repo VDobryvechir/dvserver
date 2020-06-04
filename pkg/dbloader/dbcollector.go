@@ -19,6 +19,7 @@ type CollectorInfo struct {
 	CsvWriteOptions int    `json:"csv_options"`
 	AuxTables       string `json:"aux_tables"`
 	BaseTables      string `json:"base_tables"`
+	BasePrefix      string `json:"base_prefix"`
 	IdCollector     map[string]map[string]int
 	DataCollector   map[string][][]interface{}
 	db              *dvdbdata.DBConnection
@@ -55,6 +56,11 @@ func initCollectorInfo(importName string) (*CollectorInfo, error) {
 	}
 	collectorInfo.IdCollector = make(map[string]map[string]int)
 	collectorInfo.DataCollector = make(map[string][][]interface{})
+	if collectorInfo.BasePrefix == "" {
+		collectorInfo.BasePrefix = "BASE"
+	} else {
+		collectorInfo.BasePrefix = strings.ToUpper(collectorInfo.BasePrefix)
+	}
 	return collectorInfo, nil
 }
 
