@@ -47,8 +47,10 @@ func GetTopOfferingInfo(topOfferings [][]string, ctx *dvcontext.RequestContext) 
 			parentId = parentRefs[childRefs[id]]
 			parent := totalPool[parentId]
 			if parent == nil {
-				log.Printf("Error catalog record id=%s child=%s parent=%s\n", id, childRefs[id], parentId)
-				parentId = ""
+				if parentId!="" {
+					log.Printf("Error catalog record id=%s child=%s parent=%s\n", id, childRefs[id], parentId)
+					parentId = ""
+				}
 			} else {
 				if isDescendantCategory(primaryCategory, parent.Id) {
 					log.Printf("Cyclic dependency omitted: %s (%s) and %s (%s)", id, primaryCategory.Name, parentId, parent.Name)
