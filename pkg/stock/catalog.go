@@ -1,14 +1,11 @@
 package stock
 
 import (
-	"encoding/json"
 	"errors"
 	"github.com/Dobryvechir/microcore/pkg/dvcontext"
-	"github.com/Dobryvechir/microcore/pkg/dvoc"
 	"log"
 	"sort"
 	"strconv"
-	"strings"
 )
 
 func GetTopOfferingInfo(topOfferings [][]string, ctx *dvcontext.RequestContext) (*TopOffering, error) {
@@ -101,21 +98,6 @@ func isDescendantCategory(category *PrimaryCategory, id string) bool {
 	return false
 }
 
-func processInOutInit(command string, ctx *dvcontext.RequestContext) ([]interface{}, bool) {
-	command = strings.TrimSpace(command[strings.Index(command, ":")+1:])
-	if command == "" || command[0] != '{' || command[len(command)-1] != '}' {
-		log.Printf("Invalid execution of get catalog command, config expected {}")
-		return nil, false
-	}
-	cf := &InOutConfig{}
-	err := json.Unmarshal([]byte(command), cf)
-	if err != nil {
-		log.Printf("Error in config %s: %v", command, err)
-		return nil, false
-	}
-	return []interface{}{cf.In, cf.Out, ctx}, true
-}
-
 func processGetCatalogRun(data []interface{}) bool {
 	inProp := data[0].(string)
 	outProp := data[1].(string)
@@ -135,12 +117,3 @@ func processGetCatalogRun(data []interface{}) bool {
 	return true
 }
 
-func RegisterActions() bool {
-	dvoc.AddProcessFunction("catalog_offering", dvoc.ProcessFunction{
-		Init: processInOutInit,
-		Run:  processGetCatalogRun,
-	})
-	return true
-}
-
-var inited = RegisterActions()
